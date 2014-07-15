@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.js"></script>
+<script src="http://builds.emberjs.com.s3.amazonaws.com/tags/v1.0.0/ember.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+
+</head>
+<body>
+  <script type="text/x-handlebars" data-template-name="application">
+            <div {{bind-attr class=":full_sheet"}}>
+                <div {{bind-attr class=":header_menu"}}>
+                    <div {{bind-attr class=":header_text"}}>
+                        Iterate Images From a Folder and Display images 
+                    </div>
+                </div>
+                <div style="clear:both;">&nbsp;</div>
+                <div class="body_menu">          
+                    {{outlet}}
+                    {{outlet modal}}
+                </div>
+                <div style="clear:both;">&nbsp;</div>
+                <div class="footer_menu">
+                    <div class="footer_text">Iterate Images From a Folder and Display images</div>
+                </div>
+            </div>
+        </script> 
+
+        <script type="text/x-handlebars" data-template-name="index">
+            <div class="indexPage">
+                <div style="margin-left: 15px;float:left;">Enter the server Path 
+               {{input class="inputBox" type=text value=serverPath size=35 placeholder="Add Path"}} 
+                </div>
+                
+                <div style="clear:both;">&nbsp;</div>
+                <button  class="mybutton" {{action 'getFoldersFromServer'}}> List </button>
+            </div>
+        </script> 
+
+        <script type="text/x-handlebars" data-template-name="error">
+            <div style:"width:500px;margin-right:100px;border : solid 2px balck;">
+        		<img src="images/oops.jpeg"></img>
+    		</div>
+    		
+            <div style:"width:200px;margin-right:100px;border:solid 2px balck;">
+                <span style="font-size:30px;color:red;">Sorry There are no Folders/Images avaiilable in this Folder.. {{#link-to 'application'}} Home {{/link-to}}</span>
+    		</div>        	
+        </script> 
+
+        <script type="text/x-handlebars" data-template-name="folders">
+        <!-- Folders Template to Display List of folders-->
+        
+        <button {{action 'homePage'}} >Home </button>
+            <div {{bind-attr class=":div_class"}}>
+                <div {{bind-attr class=":div_title"}}>{{title}}</div>
+                <div style="margin-top:5px;color:red;border-bottom:solid 1px; ">
+                    <strong>please select any Folder to fetch Images</strong>
+                </div>
+                 
+                <!-- Add Radio buttons code HERE-->
+                <ul>
+                    {{#each item in model}}
+                        <li style="list-style-type: square; list-style-position: outside; list-style-image: none; ">
+                            {{my-radio-button content=item}}
+                            <label class="radio_textstyle" {{bind-attr for=item.value}}>
+                                {{item.value}}
+                            </label>
+                        </li>
+                    {{/each}}
+                </ul>
+                
+                <!--End Radio Button -->
+                <div style="margin-left:120px;">
+                    <button class="button" {{action "submitFolderPath"}}> submit </button>
+                </div>
+            </div>
+         <!-- End of Folders template-->
+    	</script> 
+        
+        <script type="text/x-handlebars" data-template-name="imageList">
+         <!-- Display  List of Images Over through Iteration from the code-->
+             Total Images : {{model.length}} : <button {{action 'homePage'}} >Home </button>
+            {{#each item in model}}
+                {{#firstVal 0}}
+                    <div class="first_line"><div style="margin-top:35px;margin-left:2px;">
+                {{/firstVal}}
+            
+                <a {{action 'openModal' item.title item.description item.comment item.imageUrl item.imageId}}> 
+                    <span style="padding:4px;display: inline-block;height:310px;">
+                        <figure> <img {{bind-attr src=item.imageUrl}} height="220" width="210"/>
+                        <figcaption class="title"> <b>Title</b> :  <abbr {{bind-attr title=item.title}}>{{item.title}}</abbr></figcaption>
+                        <figcaption class="title"><b> Description</b> : <abbr {{bind-attr title=item.description}}>{{item.description}}</abbr></figcaption>
+                        <figcaption class="title"> <b>Comments</b> :  <abbr {{bind-attr title=item.comment}}>{{item.comment}}.</abbr></figcaption>
+                        </figure>
+                    </span>
+                </a>
+
+                {{#secondVal 3}}
+                   </div>
+                   </div>
+                {{/secondVal}}            
+            {{/each}}
+            <!-- End of Display  List of Images Over through Iteration-->
+        </script> 
+
+        <script type="text/x-handlebars" data-template-name="modal">
+        <!-- Pop up display based on the requested Image by the user in the application-->
+            {{#modal-dialog action="close"}}
+                <h3 class="flush--top"> :::My Selected Image::: </h3>
+                <p>Add Title : {{input class="inputBox" value=title}}</p>
+                <p>Add description : {{input class="inputBox" value=description}}</p>
+                <p>Add comment : {{input class="inputBox" value=comment}}</p>
+                <img {{bind-attr src=imageUrl}} height="280" width="340"/>
+                <p>
+                    <button class="button" {{action "close" id}}>Close</button>
+                    &nbsp;
+                    <button class="button" {{action "update" id}}>Update</button>
+                <a class="popupBoxClose" >
+                    <img {{action "close" id}} src="images/close.png" height="25" width="25" />
+                </a> 
+            {{/modal-dialog}}
+             <!-- End of popup box display-->
+        </script> 
+
+        <script type="text/x-handlebars" id="components/modal-dialog">
+            <div class="overlay" {{action "close"}}></div>
+            <div class="modal">
+                {{yield}}
+            </div>
+        </script>
+
+</body>
+</html>
